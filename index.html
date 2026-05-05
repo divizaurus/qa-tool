@@ -5,456 +5,154 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QA Comment Generator</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500&display=swap');
+
   :root {
-    --ink: #111418;
-    --ink-mid: #1e2530;
-    --surface: #f6f4f0;
-    --white: #ffffff;
-    --border: #ddd9d2;
-    --border-focus: #c07c14;
-    --text: #1a1a1a;
-    --text-dim: #5a5a5a;
-    --text-faint: #999;
-    --amber: #c07c14;
-    --amber-light: #f0b340;
-    --amber-pale: #fef3d8;
-    --green: #0d6b52;
-    --green-pale: #e4f5ef;
-    --green-mid: #0a5540;
-    --red: #b82020;
-    --red-pale: #fdf0f0;
-    --red-mid: #8a0000;
+    --ink: #111418; --ink-mid: #1e2530;
+    --surface: #f6f4f0; --white: #ffffff;
+    --border: #ddd9d2; --border-focus: #c07c14;
+    --text: #1a1a1a; --text-dim: #5a5a5a; --text-faint: #999;
+    --amber: #c07c14; --amber-light: #f0b340; --amber-pale: #fef3d8;
+    --green: #0d6b52; --green-pale: #e4f5ef;
+    --red: #b82020; --red-pale: #fdf0f0;
     --mono: 'DM Mono', 'Courier New', monospace;
     --sans: 'DM Sans', system-ui, sans-serif;
-    --serif: 'DM Serif Display', Georgia, serif;
   }
-
-  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--surface); color: var(--text); min-height: 100vh; font-size: 14px; }
 
-  body {
-    font-family: var(--sans);
-    background: var(--surface);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 14px;
-  }
+  /* HEADER */
+  .header { background: var(--ink); padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .header-title { display: flex; align-items: center; gap: 12px; }
+  .header-icon { width: 30px; height: 30px; background: var(--amber); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .header h1 { font-size: 15px; font-weight: 500; color: white; }
+  .header p  { font-size: 11px; color: rgba(255,255,255,0.35); font-family: var(--mono); margin-top: 2px; }
+  .header-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber-light); background: rgba(240,179,64,0.1); border: 1px solid rgba(240,179,64,0.2); padding: 4px 10px; border-radius: 2px; }
 
-  /* Header */
-  .header {
-    background: var(--ink);
-    padding: 24px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+  /* LAYOUT */
+  .layout { display: grid; grid-template-columns: 390px 1fr; min-height: calc(100vh - 70px); }
 
-  .header-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  /* LEFT PANEL */
+  .panel-left { background: var(--white); border-right: 1px solid var(--border); padding: 22px 20px 60px; overflow-y: auto; max-height: calc(100vh - 70px); position: sticky; top: 0; }
+  .panel-section-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
 
-  .header-icon {
-    width: 32px; height: 32px;
-    background: var(--amber);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-  }
-
-  .header h1 {
-    font-family: var(--sans);
-    font-size: 15px;
-    font-weight: 500;
-    color: white;
-    letter-spacing: -0.01em;
-  }
-
-  .header p {
-    font-size: 11px;
-    color: rgba(255,255,255,0.4);
-    font-family: var(--mono);
-    letter-spacing: 0.06em;
-    margin-top: 2px;
-  }
-
-  .header-badge {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--amber-light);
-    background: rgba(240,179,64,0.1);
-    border: 1px solid rgba(240,179,64,0.2);
-    padding: 4px 10px;
-    border-radius: 2px;
-  }
-
-  /* Layout */
-  .layout {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 0;
-    min-height: calc(100vh - 80px);
-  }
-
-  /* Left panel */
-  .panel-left {
-    background: var(--white);
-    border-right: 1px solid var(--border);
-    padding: 28px 24px;
-    overflow-y: auto;
-  }
-
-  /* Right panel */
-  .panel-right {
-    padding: 28px 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  /* Section headings */
-  .panel-section-label {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 12px;
-  }
-
-  /* Toggle: Pass / Fail */
-  .verdict-toggle {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 24px;
-  }
-
-  .verdict-btn {
-    padding: 12px;
-    border-radius: 6px;
-    border: 2px solid var(--border);
-    background: var(--white);
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.15s;
-    font-family: var(--sans);
-  }
-
-  .verdict-btn .vb-icon { font-size: 20px; display: block; margin-bottom: 4px; }
-  .verdict-btn .vb-label {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-  }
-  .verdict-btn .vb-sub {
-    font-size: 11px;
-    color: var(--text-faint);
-    margin-top: 2px;
-  }
-
-  .verdict-btn.pass.active {
-    border-color: var(--green);
-    background: var(--green-pale);
-  }
+  /* VERDICT */
+  .verdict-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+  .verdict-btn { padding: 10px; border-radius: 6px; border: 2px solid var(--border); background: var(--white); cursor: pointer; text-align: center; transition: all 0.15s; font-family: var(--sans); }
+  .verdict-btn .vb-icon  { font-size: 18px; display: block; margin-bottom: 3px; }
+  .verdict-btn .vb-label { font-size: 13px; font-weight: 500; }
+  .verdict-btn .vb-sub   { font-size: 11px; color: var(--text-faint); margin-top: 1px; }
+  .verdict-btn.pass.active { border-color: var(--green); background: var(--green-pale); }
   .verdict-btn.pass.active .vb-label { color: var(--green); }
-
-  .verdict-btn.fail.active {
-    border-color: var(--red);
-    background: var(--red-pale);
-  }
+  .verdict-btn.fail.active { border-color: var(--red); background: var(--red-pale); }
   .verdict-btn.fail.active .vb-label { color: var(--red); }
+  .verdict-btn:not(.active):hover { border-color: var(--border-focus); }
 
-  .verdict-btn:not(.active):hover {
-    border-color: var(--border-focus);
-  }
+  /* FORM */
+  .form-group { margin-bottom: 13px; }
+  .form-group > label { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: var(--text-dim); margin-bottom: 5px; }
+  .req { color: var(--red); font-size: 10px; }
+  .opt { font-size: 10px; color: var(--text-faint); font-weight: 400; }
 
-  /* Form groups */
-  .form-group {
-    margin-bottom: 16px;
-  }
-
-  .form-group label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-    letter-spacing: 0.01em;
-  }
-
-  .form-group label .req {
-    color: var(--red);
-    font-size: 10px;
-  }
-
-  .form-group label .opt {
-    font-size: 10px;
-    color: var(--text-faint);
-    font-weight: 400;
-  }
-
-  input, textarea, select {
-    width: 100%;
-    font-family: var(--sans);
-    font-size: 13px;
-    padding: 9px 12px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--white);
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s;
-    resize: vertical;
-  }
-
-  input:focus, textarea:focus, select:focus {
-    border-color: var(--border-focus);
-  }
-
-  textarea {
-    min-height: 72px;
-    line-height: 1.5;
-  }
-
+  input[type=text], textarea, select { width: 100%; font-family: var(--sans); font-size: 13px; padding: 8px 11px; border: 1px solid var(--border); border-radius: 4px; background: var(--white); color: var(--text); outline: none; transition: border-color 0.15s; resize: vertical; }
+  input[type=text]:focus, textarea:focus, select:focus { border-color: var(--border-focus); }
+  textarea { min-height: 68px; line-height: 1.5; }
   select { cursor: pointer; }
 
-  /* Checkbox row */
-  .checkbox-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 2px;
-  }
+  /* EDITABLE SELECT */
+  .editable-select-wrap { display: flex; flex-direction: column; gap: 5px; }
+  .manage-link { font-size: 10px; color: var(--text-faint); font-family: var(--mono); letter-spacing: 0.06em; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; width: fit-content; }
+  .manage-link:hover { color: var(--amber); }
 
-  .cb-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    color: var(--text-dim);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 4px 10px;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.12s;
-  }
+  /* CHECKBOXES */
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+  .cb-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 4px 9px; cursor: pointer; user-select: none; transition: all 0.12s; }
+  .cb-item input[type=checkbox] { width: auto; padding: 0; margin: 0; cursor: pointer; }
+  .cb-item.checked { background: var(--amber-pale); border-color: rgba(192,124,20,0.3); color: var(--amber); }
 
-  .cb-item input[type=checkbox] {
-    width: auto;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-  }
-
-  .cb-item.checked {
-    background: var(--amber-pale);
-    border-color: rgba(192,124,20,0.3);
-    color: var(--amber);
-  }
-
-  /* Divider in panel */
-  .panel-divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 20px 0;
-  }
-
-  /* Conditional sections */
-  .conditional {
-    display: none;
-  }
-
-  .conditional.visible {
-    display: block;
-  }
-
-  /* Right panel: output area */
-  .output-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .output-title {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-
-  .copy-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--sans);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 7px 14px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.15s;
-    background: var(--ink);
-    color: white;
-  }
-
-  .copy-btn:hover { background: var(--ink-mid); }
-  .copy-btn.copied { background: var(--green); }
-
-  /* Output box */
-  .output-box {
-    background: var(--ink);
-    border-radius: 6px;
-    padding: 24px 26px;
-    flex: 1;
-    min-height: 320px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .output-box::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(255,255,255,0.015) 24px, rgba(255,255,255,0.015) 25px);
-    pointer-events: none;
-  }
-
-  .output-box pre {
-    font-family: var(--mono);
-    font-size: 12.5px;
-    line-height: 1.75;
-    color: rgba(255,255,255,0.75);
-    white-space: pre-wrap;
-    word-break: break-word;
-    position: relative;
-  }
-
-  .output-box pre .line-label {
-    color: var(--amber-light);
-    font-weight: 500;
-  }
-
-  .output-box pre .line-pass { color: #5dbd8a; }
-  .output-box pre .line-fail { color: #e07070; }
-  .output-box pre .line-dim { color: rgba(255,255,255,0.3); }
-  .output-box pre .line-sep { color: rgba(255,255,255,0.12); }
-
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    min-height: 280px;
-    text-align: center;
-    gap: 10px;
-  }
-
-  .empty-state .es-icon { font-size: 36px; opacity: 0.3; }
-  .empty-state p {
-    font-size: 12px;
-    color: rgba(255,255,255,0.2);
-    font-family: var(--mono);
-    letter-spacing: 0.06em;
-  }
-
-  /* Severity selector */
-  .severity-pills {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .sev-pill {
-    padding: 5px 12px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.12s;
-    background: var(--white);
-    color: var(--text-dim);
-    user-select: none;
-  }
-
+  /* SEVERITY */
+  .severity-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sev-pill { padding: 4px 11px; border-radius: 4px; border: 1px solid var(--border); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.12s; background: var(--white); color: var(--text-dim); user-select: none; }
   .sev-pill.active-critical { background: #fdf0f0; border-color: var(--red); color: var(--red); }
   .sev-pill.active-major    { background: #fff5e6; border-color: #d07010; color: #d07010; }
   .sev-pill.active-minor    { background: #fffbe6; border-color: #b8a010; color: #a09010; }
   .sev-pill.active-trivial  { background: var(--green-pale); border-color: var(--green); color: var(--green); }
 
-  /* Tips */
-  .tips-section {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 16px 18px;
-  }
-
-  .tips-section .tips-label {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--amber);
-    margin-bottom: 10px;
-  }
-
-  .tips-list {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .tips-list li {
-    font-size: 12px;
-    color: var(--text-dim);
-    padding-left: 14px;
-    position: relative;
-    line-height: 1.5;
-  }
-
-  .tips-list li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: var(--amber);
-    font-size: 10px;
-    top: 2px;
-  }
-
-  /* Pass/Fail specific label in panel */
-  .mode-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 3px;
-    margin-bottom: 14px;
-  }
-
+  /* CONDITIONAL */
+  .conditional { display: none; }
+  .conditional.visible { display: block; }
+  .mode-label { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 3px; margin-bottom: 13px; }
   .mode-label.pass { background: var(--green-pale); color: var(--green); border: 1px solid rgba(13,107,82,0.2); }
-  .mode-label.fail { background: var(--red-pale); color: var(--red); border: 1px solid rgba(184,32,32,0.2); }
+  .mode-label.fail { background: var(--red-pale);   color: var(--red);   border: 1px solid rgba(184,32,32,0.2); }
+  .panel-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: 8px; padding: 24px; width: 360px; max-width: 90vw; box-shadow: 0 8px 40px rgba(0,0,0,0.18); }
+  .modal h3 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+  .modal-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-dim); }
+  .modal-item:last-of-type { border-bottom: none; }
+  .default-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--text-faint); background: var(--surface); padding: 1px 6px; border-radius: 2px; border: 1px solid var(--border); }
+  .btn-delete { background: none; border: none; cursor: pointer; color: var(--text-faint); font-size: 14px; padding: 2px 5px; border-radius: 3px; transition: color 0.12s; }
+  .btn-delete:hover { color: var(--red); }
+  .modal-add-row { display: flex; gap: 8px; margin-top: 14px; }
+  .modal-add-row input { flex: 1; }
+  .btn-primary { background: var(--ink); color: white; border: none; border-radius: 4px; padding: 8px 14px; font-family: var(--sans); font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background 0.12s; }
+  .btn-primary:hover { background: var(--ink-mid); }
+  .modal-close { display: block; width: 100%; margin-top: 14px; padding: 9px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; font-family: var(--sans); font-size: 12px; color: var(--text-dim); cursor: pointer; transition: border-color 0.12s; }
+  .modal-close:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* RIGHT PANEL */
+  .panel-right { padding: 24px 28px; display: flex; flex-direction: column; gap: 18px; }
+  .output-header { display: flex; align-items: center; justify-content: space-between; }
+  .output-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); }
+  .copy-btn { display: flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 12px; font-weight: 500; padding: 7px 14px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.15s; background: var(--ink); color: white; }
+  .copy-btn:hover  { background: var(--ink-mid); }
+  .copy-btn.copied { background: var(--green); }
+
+  .output-box { background: var(--ink); border-radius: 6px; padding: 22px 24px; flex: 1; min-height: 340px; position: relative; overflow: hidden; }
+  .output-box::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(255,255,255,0.012) 24px, rgba(255,255,255,0.012) 25px); }
+  .output-box pre { font-family: var(--mono); font-size: 12.5px; line-height: 1.75; color: rgba(255,255,255,0.72); white-space: pre-wrap; word-break: break-word; position: relative; }
+
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; text-align: center; gap: 10px; }
+  .empty-state .es-icon { font-size: 34px; opacity: 0.25; }
+  .empty-state p { font-size: 12px; color: rgba(255,255,255,0.18); font-family: var(--mono); letter-spacing: 0.06em; }
+
+  .tips-section { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 15px 17px; }
+  .tips-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 9px; }
+  .tips-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+  .tips-list li { font-size: 12px; color: var(--text-dim); padding-left: 14px; position: relative; line-height: 1.5; }
+  .tips-list li::before { content: '→'; position: absolute; left: 0; color: var(--amber); font-size: 10px; top: 2px; }
 </style>
 </head>
 <body>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-env">
+  <div class="modal">
+    <h3>Manage Environments</h3>
+    <div id="modal-env-list"></div>
+    <div class="modal-add-row">
+      <input type="text" id="modal-env-input" placeholder="Add new environment…" />
+      <button class="btn-primary" onclick="modalAdd('env')">Add</button>
+    </div>
+    <button class="modal-close" onclick="closeModal('env')">Done</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-area">
+  <div class="modal">
+    <h3>Manage Areas</h3>
+    <div id="modal-area-list"></div>
+    <div class="modal-add-row">
+      <input type="text" id="modal-area-input" placeholder="Add new area…" />
+      <button class="btn-primary" onclick="modalAdd('area')">Add</button>
+    </div>
+    <button class="modal-close" onclick="closeModal('area')">Done</button>
+  </div>
+</div>
 
 <div class="header">
   <div class="header-title">
@@ -469,7 +167,7 @@
 
 <div class="layout">
 
-  <!-- LEFT: Form -->
+  <!-- LEFT PANEL -->
   <div class="panel-left">
 
     <div class="panel-section-label">Verdict</div>
@@ -486,13 +184,7 @@
       </div>
     </div>
 
-    <!-- Common fields -->
     <div class="panel-section-label">Ticket context</div>
-
-    <div class="form-group">
-      <label>Ticket ID <span class="opt">optional</span></label>
-      <input type="text" id="f-ticket" placeholder="e.g. DOT-1234" oninput="generate()" />
-    </div>
 
     <div class="form-group">
       <label>Branch tested <span class="req">*</span></label>
@@ -501,22 +193,18 @@
 
     <div class="form-group">
       <label>Environment <span class="req">*</span></label>
-      <input type="text" id="f-env" placeholder="e.g. staging, prod, local" oninput="generate()" />
+      <div class="editable-select-wrap">
+        <select id="f-env" onchange="generate()"><option value="">— select —</option></select>
+        <span class="manage-link" onclick="openModal('env')">⚙ manage environments</span>
+      </div>
     </div>
 
     <div class="form-group">
-      <label>App / domain</label>
-      <select id="f-domain" onchange="generate()">
-        <option value="">— select —</option>
-        <option>Profile</option>
-        <option>Teams</option>
-        <option>Shopify</option>
-        <option>Admin</option>
-        <option>Billing</option>
-        <option>Sync</option>
-        <option>Exchange</option>
-        <option>Cross-app</option>
-      </select>
+      <label>Area <span class="req">*</span></label>
+      <div class="editable-select-wrap">
+        <select id="f-area" onchange="generate()"><option value="">— select —</option></select>
+        <span class="manage-link" onclick="openModal('area')">⚙ manage areas</span>
+      </div>
     </div>
 
     <div class="form-group">
@@ -527,24 +215,21 @@
     <div class="form-group">
       <label>Coverage layers checked</label>
       <div class="checkbox-group" id="layers-group">
-        <label class="cb-item" onclick="toggleCb(this)">
-          <input type="checkbox" value="Smoke" onchange="generate()"> Smoke
-        </label>
-        <label class="cb-item" onclick="toggleCb(this)">
-          <input type="checkbox" value="Functional" onchange="generate()"> Functional
-        </label>
-        <label class="cb-item" onclick="toggleCb(this)">
-          <input type="checkbox" value="Connected-area" onchange="generate()"> Connected-area
-        </label>
-        <label class="cb-item" onclick="toggleCb(this)">
-          <input type="checkbox" value="Regression" onchange="generate()"> Regression
-        </label>
+        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox" value="Smoke" onchange="generate()"> Smoke</label>
+        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox" value="Functional" onchange="generate()"> Functional</label>
+        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox" value="Connected-area" onchange="generate()"> Connected-area</label>
+        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox" value="Regression" onchange="generate()"> Regression</label>
       </div>
+    </div>
+
+    <div class="form-group">
+      <label>Attachments / links <span class="opt">optional</span></label>
+      <textarea id="f-attachments" placeholder="Screenshot URL, video link, Loom, console log…" oninput="generate()"></textarea>
     </div>
 
     <hr class="panel-divider">
 
-    <!-- PASS-specific -->
+    <!-- PASS fields -->
     <div class="conditional" id="pass-fields">
       <div class="mode-label pass">✅ Pass fields</div>
 
@@ -559,18 +244,18 @@
       </div>
 
       <div class="form-group">
-        <label>Second reviewer <span class="opt">if dual-review</span></label>
+        <label>Second reviewer <span class="opt">dual-review</span></label>
         <input type="text" id="f-reviewer" placeholder="Name of second QA (if applicable)" oninput="generate()" />
       </div>
     </div>
 
-    <!-- FAIL-specific -->
+    <!-- FAIL fields -->
     <div class="conditional" id="fail-fields">
       <div class="mode-label fail">❌ Fail fields</div>
 
       <div class="form-group">
         <label>Steps to reproduce <span class="req">*</span></label>
-        <textarea id="f-steps" rows="5" placeholder="1. Navigate to...&#10;2. Click...&#10;3. Observe..." oninput="generate()"></textarea>
+        <textarea id="f-steps" rows="5" placeholder="1. Navigate to…&#10;2. Click…&#10;3. Observe…" oninput="generate()"></textarea>
       </div>
 
       <div class="form-group">
@@ -585,12 +270,24 @@
 
       <div class="form-group">
         <label>Severity</label>
-        <div class="severity-pills" id="sev-group">
+        <div class="severity-pills">
           <div class="sev-pill" data-sev="Critical" onclick="setSeverity('Critical')">Critical</div>
-          <div class="sev-pill" data-sev="Major" onclick="setSeverity('Major')">Major</div>
-          <div class="sev-pill" data-sev="Minor" onclick="setSeverity('Minor')">Minor</div>
-          <div class="sev-pill" data-sev="Trivial" onclick="setSeverity('Trivial')">Trivial</div>
+          <div class="sev-pill" data-sev="Major"    onclick="setSeverity('Major')">Major</div>
+          <div class="sev-pill" data-sev="Minor"    onclick="setSeverity('Minor')">Minor</div>
+          <div class="sev-pill" data-sev="Trivial"  onclick="setSeverity('Trivial')">Trivial</div>
         </div>
+      </div>
+
+      <div class="form-group">
+        <label>Reproducibility</label>
+        <select id="f-repro" onchange="generate()">
+          <option value="">— select —</option>
+          <option>Always (100%)</option>
+          <option>Often (&gt;50%)</option>
+          <option>Intermittent (~50%)</option>
+          <option>Rare (&lt;25%)</option>
+          <option>Once (could not reproduce again)</option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -599,34 +296,18 @@
       </div>
 
       <div class="form-group">
-        <label>Reproducibility</label>
-        <select id="f-repro" onchange="generate()">
-          <option value="">— select —</option>
-          <option>Always (100%)</option>
-          <option>Often (>50%)</option>
-          <option>Intermittent (~50%)</option>
-          <option>Rare (<25%)</option>
-          <option>Once (could not reproduce again)</option>
-        </select>
-      </div>
-
-      <div class="form-group">
         <label>Connected areas also affected <span class="opt">optional</span></label>
         <textarea id="f-connected-fail" placeholder="e.g. Also breaks the Teams dashboard sync when this occurs" oninput="generate()"></textarea>
       </div>
 
       <div class="form-group">
-        <label>Evidence attached <span class="opt">optional</span></label>
-        <input type="text" id="f-evidence" placeholder="e.g. Screenshot attached, video link, console log" oninput="generate()" />
-      </div>
-
-      <div class="form-group">
         <label>Suggested fix direction <span class="opt">optional</span></label>
-        <input type="text" id="f-suggestion" placeholder="If obvious — e.g. appears to be a missing null check on X" oninput="generate()" />
+        <input type="text" id="f-suggestion" placeholder="e.g. appears to be a missing null check on X" oninput="generate()" />
       </div>
     </div>
 
     <hr class="panel-divider">
+
     <div class="form-group">
       <label>Signed off by</label>
       <input type="text" id="f-signoff" placeholder="Your name" oninput="generate()" />
@@ -634,7 +315,7 @@
 
   </div><!-- end panel-left -->
 
-  <!-- RIGHT: Output + tips -->
+  <!-- RIGHT PANEL -->
   <div class="panel-right">
 
     <div class="output-header">
@@ -644,7 +325,7 @@
       </button>
     </div>
 
-    <div class="output-box" id="output-box">
+    <div class="output-box">
       <div class="empty-state" id="empty-state">
         <div class="es-icon">✍</div>
         <p>Select Pass or Fail and fill in the fields<br>to generate your comment</p>
@@ -652,24 +333,108 @@
       <pre id="output-text" style="display:none;"></pre>
     </div>
 
-    <div class="tips-section" id="tips-section">
+    <div class="tips-section">
       <div class="tips-label">Writing better QA comments</div>
       <ul class="tips-list" id="tips-list">
-        <li>Be specific about what you tested, not just that you tested it — "verified billing modal upgrade flow from Starter to Pro" beats "tested billing"</li>
+        <li>Be specific — "verified billing modal upgrade flow from Starter to Pro" beats "tested billing"</li>
         <li>Always name the branch and environment — a passing test on the wrong branch is not a pass</li>
-        <li>Connected-area notes add real value — mention what you confirmed was <em>not</em> broken, not just what was fixed</li>
-        <li>If you skipped any coverage layer, say so explicitly — "connected-area not checked, deferred" is better than silence</li>
-        <li>Flag observations that aren't blockers — minor UX issues, inconsistencies, or edge cases worth watching</li>
+        <li>Mention what you confirmed was <em>not</em> broken, not just what was fixed</li>
+        <li>If you skipped a coverage layer, say so explicitly — silence is not the same as passing</li>
+        <li>Flag observations that aren't blockers — UX oddities, edge cases, things to watch next sprint</li>
       </ul>
     </div>
 
-  </div><!-- end panel-right -->
+  </div>
 
-</div><!-- end layout -->
+</div>
 
 <script>
-  let verdict = null;
-  let severity = null;
+  const DEFAULTS = {
+    env:  ['Staging', 'Express', 'Production', 'Feature branch', 'Mobile'],
+    area: ['Profile', 'Teams', 'Billing', 'Sync', 'Exchange', 'Shopify', 'Admin']
+  };
+
+  let verdict = null, severity = null;
+
+  function loadList(key) {
+    try { const s = localStorage.getItem('qa_' + key); if (s) return JSON.parse(s); } catch(e) {}
+    return null;
+  }
+  function saveList(key, arr) {
+    try { localStorage.setItem('qa_' + key, JSON.stringify(arr)); } catch(e) {}
+  }
+  function getList(key) { return loadList(key) || [...DEFAULTS[key]]; }
+
+  function buildSelect(key) {
+    const sel = document.getElementById('f-' + key);
+    const prev = sel.value;
+    const list = getList(key);
+    sel.innerHTML = '<option value="">— select —</option>';
+    list.forEach(v => {
+      const o = document.createElement('option');
+      o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    });
+    if (prev && list.includes(prev)) sel.value = prev;
+    generate();
+  }
+
+  function openModal(key) {
+    renderModalList(key);
+    document.getElementById('modal-' + key).classList.add('open');
+    document.getElementById('modal-' + key + '-input').value = '';
+  }
+
+  function closeModal(key) {
+    document.getElementById('modal-' + key).classList.remove('open');
+    buildSelect(key);
+  }
+
+  function renderModalList(key) {
+    const list = getList(key);
+    const defaults = DEFAULTS[key];
+    const container = document.getElementById('modal-' + key + '-list');
+    container.innerHTML = '';
+    list.forEach((v, i) => {
+      const row = document.createElement('div');
+      row.className = 'modal-item';
+      const isDefault = defaults.includes(v);
+      row.innerHTML = `<span>${v}</span>${isDefault
+        ? '<span class="default-badge">default</span>'
+        : `<button class="btn-delete" onclick="modalRemove('${key}',${i})">✕</button>`}`;
+      container.appendChild(row);
+    });
+  }
+
+  function modalAdd(key) {
+    const input = document.getElementById('modal-' + key + '-input');
+    const v = input.value.trim();
+    if (!v) return;
+    const list = getList(key);
+    if (list.map(x => x.toLowerCase()).includes(v.toLowerCase())) { input.value = ''; return; }
+    list.push(v);
+    saveList(key, list);
+    input.value = '';
+    renderModalList(key);
+  }
+
+  function modalRemove(key, index) {
+    const list = getList(key);
+    list.splice(index, 1);
+    saveList(key, list);
+    renderModalList(key);
+  }
+
+  ['env','area'].forEach(key => {
+    document.getElementById('modal-' + key + '-input')
+      .addEventListener('keydown', e => { if (e.key === 'Enter') modalAdd(key); });
+  });
+
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target === el) closeModal(el.id.replace('modal-',''));
+    });
+  });
 
   function setVerdict(v) {
     verdict = v;
@@ -677,7 +442,6 @@
     document.getElementById('btn-fail').classList.toggle('active', v === 'fail');
     document.getElementById('pass-fields').classList.toggle('visible', v === 'pass');
     document.getElementById('fail-fields').classList.toggle('visible', v === 'fail');
-
     updateTips(v);
     generate();
   }
@@ -686,17 +450,14 @@
     severity = s;
     document.querySelectorAll('.sev-pill').forEach(p => {
       p.className = 'sev-pill';
-      if (p.dataset.sev === s) {
-        p.classList.add('active-' + s.toLowerCase());
-      }
+      if (p.dataset.sev === s) p.classList.add('active-' + s.toLowerCase());
     });
     generate();
   }
 
   function toggleCb(label) {
     setTimeout(() => {
-      const checked = label.querySelector('input').checked;
-      label.classList.toggle('checked', checked);
+      label.classList.toggle('checked', label.querySelector('input').checked);
       generate();
     }, 0);
   }
@@ -705,107 +466,57 @@
     return Array.from(document.querySelectorAll('#layers-group input:checked')).map(i => i.value);
   }
 
-  function val(id) {
-    return (document.getElementById(id)?.value || '').trim();
-  }
-
-  function line(label, value) {
-    if (!value) return '';
-    return `${label}: ${value}\n`;
-  }
+  function val(id) { return (document.getElementById(id)?.value || '').trim(); }
 
   function generate() {
     if (!verdict) return;
-
-    const ticket  = val('f-ticket');
-    const branch  = val('f-branch');
-    const env     = val('f-env');
-    const domain  = val('f-domain');
-    const what    = val('f-what');
-    const layers  = getCheckedLayers();
-    const signoff = val('f-signoff');
-
-    let out = '';
+    const branch = val('f-branch'), env = val('f-env'), area = val('f-area');
+    const what = val('f-what'), layers = getCheckedLayers();
+    const attachments = val('f-attachments'), signoff = val('f-signoff');
     const SEP = '─'.repeat(44);
+    let out = '';
 
     if (verdict === 'pass') {
       const connectedPass = val('f-connected-pass');
-      const notesPass     = val('f-notes-pass');
-      const reviewer      = val('f-reviewer');
+      const notesPass = val('f-notes-pass');
+      const reviewer = val('f-reviewer');
 
-      out += `✅  QA PASS\n`;
-      out += `${SEP}\n`;
-      if (ticket)  out += `Ticket:       ${ticket}\n`;
-      if (branch)  out += `Branch:       ${branch}\n`;
-      if (env)     out += `Environment:  ${env}\n`;
-      if (domain)  out += `Domain:       ${domain}\n`;
+      out += `✅  QA PASS\n${SEP}\n`;
+      if (branch) out += `Branch:       ${branch}\n`;
+      if (env)    out += `Environment:  ${env}\n`;
+      if (area)   out += `Area:         ${area}\n`;
       out += `\n`;
-      if (what) {
-        out += `TESTED\n${what}\n\n`;
-      }
-      if (layers.length) {
-        out += `COVERAGE\n${layers.join(' · ')}\n\n`;
-      }
-      if (connectedPass) {
-        out += `CONNECTED AREAS\n${connectedPass}\n\n`;
-      }
-      if (notesPass) {
-        out += `OBSERVATIONS\n${notesPass}\n\n`;
-      }
+      if (what)          out += `TESTED\n${what}\n\n`;
+      if (layers.length) out += `COVERAGE\n${layers.join(' · ')}\n\n`;
+      if (connectedPass) out += `CONNECTED AREAS\n${connectedPass}\n\n`;
+      if (notesPass)     out += `OBSERVATIONS\n${notesPass}\n\n`;
+      if (attachments)   out += `ATTACHMENTS\n${attachments}\n\n`;
       out += `${SEP}\n`;
-      if (reviewer) {
-        out += `QA: ${signoff || '—'}  ·  Second review: ${reviewer}\n`;
-      } else if (signoff) {
-        out += `QA: ${signoff}\n`;
-      }
+      if (reviewer)     out += `QA: ${signoff || '—'}  ·  Second review: ${reviewer}\n`;
+      else if (signoff) out += `QA: ${signoff}\n`;
       out += `Status: PASSED ✅`;
 
     } else {
-      const steps    = val('f-steps');
-      const expected = val('f-expected');
-      const actual   = val('f-actual');
-      const affected = val('f-affected');
-      const repro    = val('f-repro');
-      const connectedFail = val('f-connected-fail');
-      const evidence = val('f-evidence');
-      const suggestion = val('f-suggestion');
+      const steps = val('f-steps'), expected = val('f-expected'), actual = val('f-actual');
+      const affected = val('f-affected'), repro = val('f-repro');
+      const connectedFail = val('f-connected-fail'), suggestion = val('f-suggestion');
 
-      out += `❌  QA FAIL\n`;
-      out += `${SEP}\n`;
-      if (ticket)   out += `Ticket:       ${ticket}\n`;
+      out += `❌  QA FAIL\n${SEP}\n`;
       if (branch)   out += `Branch:       ${branch}\n`;
       if (env)      out += `Environment:  ${env}\n`;
-      if (domain)   out += `Domain:       ${domain}\n`;
+      if (area)     out += `Area:         ${area}\n`;
       if (severity) out += `Severity:     ${severity}\n`;
       if (repro)    out += `Reproducible: ${repro}\n`;
       out += `\n`;
-      if (what) {
-        out += `TESTED\n${what}\n\n`;
-      }
-      if (layers.length) {
-        out += `COVERAGE ATTEMPTED\n${layers.join(' · ')}\n\n`;
-      }
-      if (steps) {
-        out += `STEPS TO REPRODUCE\n${steps}\n\n`;
-      }
-      if (expected) {
-        out += `EXPECTED\n${expected}\n\n`;
-      }
-      if (actual) {
-        out += `ACTUAL\n${actual}\n\n`;
-      }
-      if (affected) {
-        out += `AFFECTED AREAS\n${affected}\n\n`;
-      }
-      if (connectedFail) {
-        out += `CONNECTED IMPACT\n${connectedFail}\n\n`;
-      }
-      if (evidence) {
-        out += `EVIDENCE\n${evidence}\n\n`;
-      }
-      if (suggestion) {
-        out += `SUGGESTED DIRECTION\n${suggestion}\n\n`;
-      }
+      if (what)          out += `TESTED\n${what}\n\n`;
+      if (layers.length) out += `COVERAGE ATTEMPTED\n${layers.join(' · ')}\n\n`;
+      if (steps)         out += `STEPS TO REPRODUCE\n${steps}\n\n`;
+      if (expected)      out += `EXPECTED\n${expected}\n\n`;
+      if (actual)        out += `ACTUAL\n${actual}\n\n`;
+      if (affected)      out += `AFFECTED AREAS\n${affected}\n\n`;
+      if (connectedFail) out += `CONNECTED IMPACT\n${connectedFail}\n\n`;
+      if (attachments)   out += `ATTACHMENTS\n${attachments}\n\n`;
+      if (suggestion)    out += `SUGGESTED DIRECTION\n${suggestion}\n\n`;
       out += `${SEP}\n`;
       if (signoff) out += `QA: ${signoff}\n`;
       out += `Status: FAILED ❌ — returned to dev`;
@@ -813,14 +524,10 @@
 
     const pre = document.getElementById('output-text');
     const empty = document.getElementById('empty-state');
-
     if (out.trim()) {
-      pre.style.display = 'block';
-      empty.style.display = 'none';
-      pre.textContent = out;
+      pre.style.display = 'block'; empty.style.display = 'none'; pre.textContent = out;
     } else {
-      pre.style.display = 'none';
-      empty.style.display = 'flex';
+      pre.style.display = 'none'; empty.style.display = 'flex';
     }
   }
 
@@ -846,17 +553,13 @@
     ta.value = text;
     ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
     document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    try {
-      document.execCommand('copy');
-      onSuccess();
-    } catch(e) {
+    ta.focus(); ta.select();
+    try { document.execCommand('copy'); onSuccess(); }
+    catch(e) {
       const range = document.createRange();
       range.selectNodeContents(document.getElementById('output-text'));
       const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
+      sel.removeAllRanges(); sel.addRange(range);
       const btn = document.getElementById('copy-btn');
       btn.querySelector('span').textContent = 'Text selected — press Ctrl+C';
       setTimeout(() => { btn.querySelector('span').textContent = 'Copy to clipboard'; }, 3000);
@@ -869,23 +572,22 @@
     if (v === 'pass') {
       list.innerHTML = `
         <li>Name the branch explicitly — a passing test on the wrong branch is not a pass</li>
-        <li>Mention what you confirmed was <em>not</em> broken, not just what was fixed — "billing flow unaffected" is useful context</li>
-        <li>If connected-area was not checked, say so explicitly: "deferred — not enough time" is better than silence</li>
-        <li>Flag non-blocking observations — UX inconsistencies, minor edge cases, things to watch next sprint</li>
-        <li>On dual-review: both names in the sign-off, always. Makes the dual-coverage visible in Jira history.</li>
-        <li>Avoid "looks good" — describe what you actually verified and what you did not</li>
-      `;
+        <li>Mention what you confirmed was <em>not</em> broken, not just what was fixed</li>
+        <li>If connected-area was not checked, say "deferred" — silence is not the same as passing</li>
+        <li>Flag non-blocking observations — UX inconsistencies, edge cases, things to watch</li>
+        <li>On dual-review: both names in the sign-off, always</li>`;
     } else {
       list.innerHTML = `
         <li>Steps to reproduce are the most important field — if a dev can't reproduce it, the bug doesn't exist to them</li>
-        <li>Separate expected vs actual clearly — this is the core of the bug report and should be unambiguous</li>
-        <li>Reproducibility is critical for triage — "always" vs "intermittent" changes the priority completely</li>
-        <li>Connected impact gets overlooked — always check if the bug has ripple effects in adjacent areas</li>
-        <li>If you have a suggested fix direction, include it — saves time and signals QA's understanding of the system</li>
-        <li>Severity should reflect user impact, not how annoying the bug was to find</li>
-      `;
+        <li>Separate expected vs actual clearly — this is the core of the report</li>
+        <li>Reproducibility changes triage priority completely — "always" vs "intermittent" matters</li>
+        <li>Always check if the bug ripples into connected areas and document what you found</li>
+        <li>Severity should reflect user impact, not how annoying the bug was to find</li>`;
     }
   }
+
+  buildSelect('env');
+  buildSelect('area');
 </script>
 </body>
 </html>
