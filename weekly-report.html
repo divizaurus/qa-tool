@@ -184,6 +184,12 @@
     color:var(--text);
   }
   #preview b{color:var(--accent);}
+  #preview a{
+    color:var(--accent);
+    text-decoration:none;
+    border-bottom:1px dotted var(--accent-dim);
+  }
+  #preview a:hover{border-bottom-color:var(--accent);}
 
   .hint{
     font-size:11px;
@@ -235,6 +241,9 @@
       <div class="section-head"><h2>🎫 Tickets / Issues submitted</h2></div>
       <label>Jira filter or issues link</label>
       <input type="text" id="ticketsLink" placeholder="https://dotcards.atlassian.net/issues/?filter=10310">
+      <label>Jira base URL (ticket IDs like DD-4454 auto-link to here)</label>
+      <input type="text" id="jiraBase" value="https://dotcards.atlassian.net/browse/">
+      <div class="hint">Copy uses rich text, so links survive pasting into Notion/Slack/Docs. Plain-text paste targets still get the readable ID.</div>
     </section>
 
     <section>
@@ -381,19 +390,93 @@ function buildText(){
   return out.trim();
 }
 
-function renderPreview(){
-  document.getElementById('preview').textContent = buildText();
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function copyOutput(){
+// Standard Jira issue key shape: one or more letters, then -, then digits (e.g. DD-4454)
+const TICKET_RE = /\b[A-Z][A-Z0-9]{1,9}-\d+\b/g;
+
+function getJiraBaseUrl(){
+  let v = document.getElementById('jiraBase').value.trim();
+  if(!v) v = 'https://dotcards.atlassian.net/browse/';
+  if(!v.endsWith('/')) v += '/';
+  return v;
+}
+
+const URL_RE = /\bhttps?:\/\/[^\s<]+/g;
+
+function linkifyHtml(escapedText){
+  const base = getJiraBaseUrl();
+  // Links raw URLs first, then ticket IDs — skip ticket IDs already inside an <a> from the URL pass.
+  let html = escapedText.replace(URL_RE, m => `<a href="${m}" target="_blank" rel="noopener">${m}</a>`);
+  const parts = html.split(/(<a [^>]*>.*?<\/a>)/g);
+  html = parts.map(part => {
+    if(part.startsWith('<a ')) return part;
+    return part.replace(TICKET_RE, m => `<a href="${base}${m}" target="_blank" rel="noopener">${m}</a>`);
+  }).join('');
+  return html;
+}
+
+function buildHtml(){
   const text = buildText();
-  navigator.clipboard.writeText(text).then(()=>{
-    const btn = document.getElementById('copyBtn');
-    const original = btn.textContent;
+  return linkifyHtml(escapeHtml(text)).replace(/\n/g, '<br>');
+}
+
+function renderPreview(){
+  document.getElementById('preview').innerHTML = buildHtml();
+}
+
+async function copyOutput(){
+  const text = buildText();
+  const btn = document.getElementById('copyBtn');
+  const original = btn.textContent;
+  let success = false;
+
+  // Attempt 1: modern async clipboard write with both plain + rich formats.
+  try{
+    if(navigator.clipboard && window.ClipboardItem){
+      const html = buildHtml();
+      const item = new ClipboardItem({
+        'text/plain': new Blob([text], {type:'text/plain'}),
+        'text/html': new Blob([html], {type:'text/html'})
+      });
+      await navigator.clipboard.write([item]);
+      success = true;
+    }
+  } catch(e){ success = false; }
+
+  // Attempt 2: select the rendered preview and use execCommand('copy').
+  // This copies exactly what's on screen (including the <a> links) and is
+  // far more reliably permitted by Safari on file:// pages than the async API.
+  if(!success){
+    try{
+      const preview = document.getElementById('preview');
+      const range = document.createRange();
+      range.selectNodeContents(preview);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      success = document.execCommand('copy');
+      sel.removeAllRanges();
+    } catch(e){ success = false; }
+  }
+
+  // Attempt 3: last-resort plain text.
+  if(!success){
+    try{
+      await navigator.clipboard.writeText(text);
+      success = true;
+    } catch(e){ success = false; }
+  }
+
+  if(success){
     btn.textContent = 'Copied ✓';
     btn.classList.add('copied');
-    setTimeout(()=>{ btn.textContent = original; btn.classList.remove('copied'); }, 1500);
-  });
+  } else {
+    btn.textContent = 'Copy failed — select manually';
+  }
+  setTimeout(()=>{ btn.textContent = original; btn.classList.remove('copied'); }, 1800);
 }
 
 // init defaults
@@ -415,6 +498,7 @@ function initDefaults(){
 
 document.getElementById('featureFocus').addEventListener('input', renderPreview);
 document.getElementById('ticketsLink').addEventListener('input', renderPreview);
+document.getElementById('jiraBase').addEventListener('input', renderPreview);
 document.getElementById('startDate').addEventListener('input', renderPreview);
 document.getElementById('endDate').addEventListener('input', renderPreview);
 
