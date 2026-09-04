@@ -362,7 +362,7 @@ function buildText(){
     .split('\n').map(s=>s.trim()).filter(Boolean);
 
   let out = `📋 QA Weekly Update — ${dateRange}\n`;
-  out += `🎯 Feature Focus: ${focusLines.map(l=>'- ' + l).join(' ')}\n`;
+  out += `🎯 Feature Focus: ${focusLines.map(l=>'- ' + l).join('\n')}\n`;
   out += `✅ Tested:\n`;
 
   document.querySelectorAll('.area-block').forEach(block=>{
