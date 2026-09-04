@@ -249,19 +249,19 @@
     <section>
       <div class="section-head"><h2>🚀 Releases</h2></div>
       <div id="releaseList"></div>
-      <button class="add" onclick="addLine('releaseList','e.g. Express Release - fixes for the sign-up issue')">+ Add release</button>
+      <button class="add" onclick="addLine('releaseList')">+ Add release</button>
     </section>
 
     <section>
       <div class="section-head"><h2>🚧 Blockers</h2></div>
       <div id="blockerList"></div>
-      <button class="add" onclick="addLine('blockerList','e.g. Backend for Image gallery not implemented')">+ Add blocker</button>
+      <button class="add" onclick="addLine('blockerList')">+ Add blocker</button>
     </section>
 
     <section>
       <div class="section-head"><h2>⏳ Carrying into next week</h2></div>
       <div id="carryList"></div>
-      <button class="add" onclick="addLine('carryList','What\'s open/blocked + why')">+ Add item</button>
+      <button class="add" onclick="addLine('carryList')">+ Add item</button>
     </section>
 
   </div>
@@ -300,17 +300,26 @@ function addArea(name='', tickets=''){
   `;
   document.getElementById('areaList').appendChild(wrap);
   renderPreview();
+  return wrap;
 }
 
-function addLine(listId, placeholder){
+const LIST_PLACEHOLDERS = {
+  releaseList: 'e.g. Express Release - fixes for the sign-up issue',
+  blockerList: 'e.g. Backend for Image gallery not implemented',
+  carryList: "What's open/blocked + why"
+};
+
+function addLine(listId){
+  const placeholder = LIST_PLACEHOLDERS[listId] || '';
   const wrap = document.createElement('div');
   wrap.className = 'list-item';
   wrap.innerHTML = `
-    <textarea placeholder="${placeholder}" oninput="renderPreview()"></textarea>
+    <textarea placeholder="${escapeAttr(placeholder)}" oninput="renderPreview()"></textarea>
     <button class="remove danger" onclick="this.parentElement.remove(); renderPreview();">✕</button>
   `;
   document.getElementById(listId).appendChild(wrap);
   renderPreview();
+  return wrap;
 }
 
 function escapeAttr(s){
@@ -489,9 +498,9 @@ function initDefaults(){
   defaultAreas.forEach(a => addArea(a.name, a.tickets));
   document.getElementById('ticketsLink').value = 'https://dotcards.atlassian.net/issues/?filter=10310';
 
-  addLine('releaseList','');
-  addLine('blockerList','');
-  addLine('carryList','');
+  addLine('releaseList');
+  addLine('blockerList');
+  addLine('carryList');
 
   renderPreview();
 }
